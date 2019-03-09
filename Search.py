@@ -13,16 +13,21 @@ arrayLength = 100000
 
 class UseCases():
     def __init__(self):
-        self.bestArray = list()
-        self.averageArray = list()
-        self.worstArray = list()
+        self.Array = list()
 
-    def setBestArray(self):
+    def setArray(self):
+        pass
+
+    def getArray(self):
+        pass
+
+class BestCase(UseCases):
+    def setArray(self):
         r = range(arrayLength)
-        self.bestArray = list(r)
+        self.Array = list(r)
 
-    def getBestArray(self):
-        return self.bestArray
+    def getArray(self):
+        return self.Array
 
 
 class BaseSearch:
@@ -171,9 +176,13 @@ class SearchFactory():
            return InterpolationSearch('Interpolation Search')
 
 
+class CaseFactory():
+   def buildCase(self, typ):
+       if typ == 'Best':
+          return BestCase()
 
-usecases = UseCases()
-usecases.setBestArray()
+usecases = CaseFactory().buildCase('Best')
+usecases.setArray()
 
 #searchTypes = ['Linear', 'Binary', 'Jump','Interpolation']
 search_factory = SearchFactory()
@@ -181,7 +190,8 @@ alg = search_factory.buildSearch('Linear')
 
 searchElement = 25000
 
-result = alg.search(usecases.getBestArray(), arrayLength, searchElement)
+result = alg.search(usecases.getArray(), arrayLength, searchElement)
+
 if result == -1:
     print("Element is not present in array")
 else:
