@@ -6,8 +6,12 @@
 # https://www.geeksforgeeks.org/interpolation-search/
 
 from datetime import datetime
+import time
 import random
 import math
+import matplotlib.pyplot as plt
+import numpy as np
+
 
 # 0 50000 99999
 # ArrayLenght
@@ -66,16 +70,22 @@ class PeformanceSearch:
         self.foundIndex = -1
 
     def startTime(self):
-        self.timeStart = float(datetime.time(datetime.now()).microsecond)
+        tempTime= datetime.time(datetime.now())
+        self.timeStart = (tempTime.second*1000) + (tempTime.microsecond/1000)
+        #self.timeStart = float(datetime.time(datetime.now()).microsecond)
         print("Start Time: ",self.timeStart)
 
     def stopTime(self):
-        self.timeStop = float(datetime.time(datetime.now()).microsecond)
+        tempTime = datetime.time(datetime.now())
+        self.timeStop = (tempTime.second*1000) + (tempTime.microsecond/1000)
+        #self.timeStop = float(datetime.time(datetime.now()).microsecond)
         print("Stop Time: ", self.timeStop)
 
     def calcTime(self):
-        self.elapsedTime =float(self.timeStop - self.timeStart)
-        print("Elapsed Time: ", self.elapsedTime)
+        #print(type(self.timeStop - self.timeStart))
+        self.elapsedTime = float(self.timeStop - self.timeStart)
+        #self.elapsedTime = float(self.timeStop - self.timeStart)
+        print(self.title, " Elapsed Time: ", self.elapsedTime)
 
     def search(self,arr,n,x):
         return -1
@@ -95,11 +105,41 @@ class PeformanceSearch:
         self.calcTime()
         return self.foundIndex,self.elapsedTime,self.numberofSteps
 
+    def __iter__(self):
+        return SearchIterator(self)
+
+
+class SearchObjects():
+    def __init__(self, searchTypes):
+        self.searchTypes = searchTypes
+        self.searchMax = len(searchTypes)
+
+    def __iter__(self):
+        return SearchIterator(self)
+
+# Iterator Pattern
+class SearchIterator(object):
+    "An iterator."
+
+    def __init__(self, container):
+        self.container = container
+        self.n = -1
+
+    def __next__(self):
+        self.n += 1
+        if self.n >= self.container.searchMax:
+            raise StopIteration
+        return self.container.searchTypes[self.n],self.n
+
+    def __iter__(self):
+        return self
+
 
 class LinearSearch(PeformanceSearch):
     def search(self,arr, n, x):
         #start_time=float(datetime.time(datetime.now()).microsecond)
         #print(start_time)
+        self.numberofSteps=0
         for i in range(0, n):
             self.numberofSteps = self.numberofSteps + 1
             if arr[i] == x:
@@ -116,6 +156,7 @@ class BinarySearch(PeformanceSearch):
         r = n
         #start_time=float(datetime.time(datetime.now()).microsecond)
         #print(start_time)
+        self.numberofSteps = 0
         while l <= r:
             self.numberofSteps = self.numberofSteps + 1
             mid = int(l + (r - l) / 2)
@@ -153,6 +194,7 @@ class JumpSearch(PeformanceSearch):
         prev = 0
         #start_time=float(datetime.time(datetime.now()).microsecond)
         #print(start_time)
+        self.numberofSteps = 0
         while arr[int(min(step, n) - 1)] < x:
             self.numberofSteps = self.numberofSteps + 1
             prev = step
@@ -188,6 +230,7 @@ class InterpolationSearch(PeformanceSearch):
         hi = (n - 1)
         #start_time=float(datetime.time(datetime.now()).microsecond)
         #print(start_time)
+        self.numberofSteps = 0
         # Since array is sorted, an element present
         # in array must be in range defined by corner
         while lo <= hi and x >= arr[lo] and x <= arr[hi]:
@@ -240,21 +283,125 @@ class CaseFactory():
 usecases = CaseFactory().buildCase('Best')
 usecases.setArray()
 
-#searchTypes = ['Linear', 'Binary', 'Jump','Interpolation']
-search_factory = SearchFactory()
-alg = search_factory.buildSearch('Linear')
+searchCases = ['Best','Worst','Average']
+searchElement = {'Best':9999,'Worst':99999,'Average':50000}
+searchTypes = ['Linear', 'Binary', 'Jump','Interpolation']
+searchobjects = SearchObjects(searchTypes)
 
-searchElement = 25000
+#timeStat=list()
+#stepStat=list()
+
+# Initialize statistical variables
+timeStat = [[0 for x in range(len(searchCases))] for y in range(len(searchTypes))]
+stepStat= [[0 for x in range(len(searchCases))] for y in range(len(searchTypes))]
+
+#for iter in range(0,len(searchTypes)):
+for iter,order in searchobjects:
+    for newiter in range(0,len(searchCases)):
+        search_factory = SearchFactory()
+        #alg = search_factory.buildSearch(searchTypes[iter])
+        #alg = search_factory.buildSearch(iter)
+        totaltime=0
+        step=0
+        # Running the algorithm for 10 times to compute the average result
+        for epoch in range(0,10):
+            alg = search_factory.buildSearch(iter)
+            index, time, step = alg.measurePerformance(usecases.getArray(), arrayLength, searchElement[searchCases[newiter]])
+            #print("mmmm",step)
+            totaltime = totaltime + time
+        timeStat[order][newiter]=totaltime/10
+        stepStat[order][newiter]=step
+
+
+print("Time Stat",timeStat)
+print("Step",stepStat)
+
+#plt.plot(searchTypes, timeStat, 'g', label='Train Loss')
+#plt.plot(searchTypes, stepStat,'b', label='Validation Loss')
+#plt.xticks(np.arange(rStart, rStop, 1))
+
+# Individual graphics for Time Performance
+for iter in range(0,len(searchTypes)):
+    plt.bar(searchCases, timeStat[iter], align='center', alpha=0.5)
+    plt.title(searchTypes[iter])
+    plt.xlabel('Time Performance for '+searchTypes[iter])
+    plt.ylabel('Time in Milisecons')
+    plt.tight_layout()
+    plt.show()
+
+# Individual graphics for Complexity Performance
+for iter in range(0,len(searchTypes)):
+    plt.bar(searchCases, stepStat[iter], align='center', alpha=0.5)
+    plt.title(searchTypes[iter])
+    plt.xlabel('Number of Steps Performance for '+searchTypes[iter])
+    plt.ylabel('Number of Steps')
+    plt.tight_layout()
+    plt.show()
+
+
+fig, ax = plt.subplots()
+index = np.arange(len(searchCases))
+bar_width = 0.35
+opacity = 0.8
+colors=['b','r','m','g']
+
+# All graphics for Time Performance
+for iter in range(0,len(searchTypes)):
+    plt.bar(index+(iter*bar_width), timeStat[iter],bar_width/2,alpha=opacity,color=colors[iter],label=searchTypes[iter])
+    #index=index+bar_width
+
+#plt.ylim(, 100000)
+#plt.yticks(np.arange(0, 100000, 500))
+plt.xlabel('Test Cases')
+plt.ylabel('Timer in Miliseconds')
+plt.title('Time Performance for Search Algorithms')
+plt.xticks(index + bar_width, searchCases)
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+# All graphics for Complexity Performance
+for iter in range(0,len(searchTypes)):
+    plt.bar(index+(iter*bar_width), stepStat[iter],bar_width/2,alpha=opacity,color=colors[iter],label=searchTypes[iter])
+    #index=index+bar_width
+
+#plt.ylim(, 100000)
+#plt.yticks(np.arange(0, 100000, 500))
+plt.xlabel('Test Cases')
+plt.ylabel('Number of Steps')
+plt.title('Complexity Performance for Search Algorithms')
+plt.xticks(index + bar_width, searchCases)
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+
+
+
+
+
+
+
+
+#plt.xticks(searchTypes, objects)
+#plt.ylabel('Usage')
+#plt.title('Programming language usage')
+
+
+#plt.legend()
+
 
 #result = alg.search(usecases.getArray(), arrayLength, searchElement)
 
-index,time,step = alg.measurePerformance(usecases.getArray(), arrayLength, searchElement)
 
+'''
 if index == -1:
     print("Element is not present in array")
 else:
     print("Element is present at index", index)
     print("Time: ",time)
     print("Step: ",step)
-
+'''
 
