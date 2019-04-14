@@ -360,7 +360,7 @@ plt.legend()
 
 plt.tight_layout()
 plt.show()
-
+ 
 # All graphics for Complexity Performance
 for iter in range(0,len(searchTypes)):
     plt.bar(index+(iter*bar_width), stepStat[iter],bar_width/2,alpha=opacity,color=colors[iter],label=searchTypes[iter])
