@@ -5,6 +5,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import random
 from matplotlib.figure import Figure
+import Search
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -102,9 +103,13 @@ class MainWindow(QWidget):
         #self.showValues(self.comboBoxSearch.currentText(),self.comboBoxSearch1.currentText())
         print("Search Algorithm: ",self.comboBoxSearch.currentText())
         print("Use Case: ", self.comboBoxSearch2.currentText())
-        self.secondWindow = SecondWindow()
+        if self.comboBoxSearch.currentText() == 'All':
+            Search.runAll(self.comboBoxSearch.currentText(), self.comboBoxSearch2.currentText())
+        else:
+            Search.runSearch(self.comboBoxSearch.currentText(),self.comboBoxSearch2.currentText())
+        #self.secondWindow = SecondWindow(fig1,fig2)
         #self.dialogs.append(secondWindow)
-        self.secondWindow.show()
+        #self.secondWindow.show()
         #self.initUI()
         #self.plot()
         #QMessageBox.information(self, 'Message', 'checked' if self.checkBox.isChecked() else 'unchecked')
@@ -136,7 +141,7 @@ class SecondWindow(QWidget):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-        m = PlotCanvas(self, width=5, height=4)
+        m = PlotCanvas(self,width=5, height=4)
         m.move(0, 0)
         '''
         button = QPushButton('PyQt5 button', self)
@@ -149,7 +154,7 @@ class SecondWindow(QWidget):
 
 class PlotCanvas(FigureCanvas):
 
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
+    def __init__(self,parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         #self.axes = fig.add_subplot(111)
 
@@ -165,8 +170,9 @@ class PlotCanvas(FigureCanvas):
     def plot(self):
         data = [random.random() for i in range(25)]
         ax = self.figure.add_subplot(111)
-        ax.plot(data, 'r-')
-        ax.set_title('PyQt Matplotlib Example')
+        ax=self.fig1
+        #ax.plot(data, 'r-')
+        #ax.set_title('PyQt Matplotlib Example')
         self.draw()
 
 
@@ -175,7 +181,6 @@ def main():
     mainWindow = MainWindow()
     mainWindow.show()
     app.exec()
-
 
 main()
 
