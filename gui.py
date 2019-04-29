@@ -6,6 +6,7 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 import random
 from matplotlib.figure import Figure
 import Search
+import Sorting
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -119,9 +120,14 @@ class MainWindow(QWidget):
         #self.showValues(self.comboBoxSearch.currentText(),self.comboBoxSearch1.currentText())
         print("Sort Algorithm: ",self.comboBoxSearch3.currentText())
         print("Use Case: ", self.comboBoxSearch4.currentText())
-        self.secondWindow = SecondWindow()
+        if self.comboBoxSearch3.currentText() == 'All':
+            Sorting.runAll(self.comboBoxSearch3.currentText(), self.comboBoxSearch4.currentText())
+        else:
+            Sorting.runSort(self.comboBoxSearch3.currentText(),self.comboBoxSearch4.currentText())
+
+        #self.secondWindow = SecondWindow()
         #self.dialogs.append(secondWindow)
-        self.secondWindow.show()
+        #self.secondWindow.show()
         #self.initUI()
         #self.plot()
         #QMessageBox.information(self, 'Message', 'checked' if self.checkBox.isChecked() else 'unchecked')
@@ -183,4 +189,3 @@ def main():
     app.exec()
 
 main()
-

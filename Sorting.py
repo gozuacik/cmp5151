@@ -5,13 +5,18 @@
 #https://www.geeksforgeeks.org/bubble-sort/
 
 from datetime import datetime
+import datetime
+import time
 import random
 import math
-import sys
+import matplotlib.pyplot as plt
+import numpy as np
+from timeit import default_timer as timer
+
 
 # 0 50000 99999
 # ArrayLenght
-arrayLength = 10
+arrayLength = 1000
 
 class UseCase:
     def __init__(self):
@@ -47,13 +52,13 @@ class AverageCase(UseCase):
     def setArray(self):
         r = range(arrayLength)
         self.array = list(r)
-        random.shuffle(self.array)  # shuffle ????
+        random.shuffle(self.array)
         print("Array[0]...Array[",arrayLength- 1, "]: ",self.array[0],self.array[arrayLength-1])
 
     def getArray(self):
         return self.array
 
-# template method
+# Template method
 class PerformanceSearch:
     def __init__(self,title):
         self.timeStart = 0
@@ -61,19 +66,31 @@ class PerformanceSearch:
         self.title = title
         self.elapsedTime = 0
         self.numberofSteps = 0
-        self.foundIndex = -1
+
 
     def startTime(self):
-        self.timeStart = float (datetime.time(datetime.now()).microsecond)
-        print("Start Time : ", self.timeStart)
+        #tempTime = datetime.time(datetime.now())
+        self.timeStart =  timer()
+        #self.timeStart = (tempTime.second*1000) + (tempTime.microsecond/1000)
+        # self.timeStart = float(datetime.time(datetime.now()).microsecond)
+        print("Start Time: ",datetime.datetime.now())
+
 
     def stopTime(self):
-        self.timeStop = float (datetime.time(datetime.now()).microsecond)
-        print("Stop Time : ",self.timeStop)
+        #tempTime = datetime.time(datetime.now())
+        self.timeStop = timer()
+        #self.timeStop = (tempTime.second*1000) + (tempTime.microsecond/1000)
+        #self.timeStop = float(datetime.time(datetime.now()).microsecond)
+        print("Stop Time: ", datetime.datetime.now())
 
     def calcTime(self):
-        self.elapsedTime = float(self.timeStop - self.timeStart)
-        print("Elapsed Time : ", self.elapsedTime)
+        #print(type(self.timeStop - self.timeStart))
+        self.elapsedTime = self.timeStop - self.timeStart
+        tempTimer = int(self.elapsedTime)
+#        self.elapsedTime = datetime.datetime(self.timeStop - self.timeStart)
+        print(self.title, " Elapsed Time = ",self.elapsedTime)
+#        print('{:02d}:{:02d}:{:02d}'.format(tempTimer// 3600, (tempTimer % 3600 // 60), tempTimer % 60))
+
 
     def sort(self,arr):
         return list
@@ -88,9 +105,38 @@ class PerformanceSearch:
 
     def measurePerformance(self,arr):
         self.startTime()
+        self.sort(arr)
         self.stopTime()
         self.calcTime()
-        return self.elapsedTime,self.numberofSteps
+        return self.elapsedTime, self.numberofSteps
+
+    def __iter__(self):
+        return SortIterator(self)
+
+class SortObjects():
+    def __init__(self, sortTypes):
+        self.sortTypes = sortTypes
+        self.sortMax = len(sortTypes)
+
+    def __iter__(self):
+        return SortIterator(self)
+
+# Iterator Pattern
+class SortIterator(object):
+    "An iterator."
+
+    def __init__(self, container):
+        self.container = container
+        self.n = -1
+
+    def __next__(self):
+        self.n += 1
+        if self.n >= self.container.sortMax:
+            raise StopIteration
+        return self.container.sortTypes[self.n],self.n
+
+    def __iter__(self):
+        return self
 
 class BubbleSort(PerformanceSearch):
     def sort(self,arr):
@@ -114,43 +160,35 @@ class BubbleSort(PerformanceSearch):
 
 class MergeSort(PerformanceSearch):
     def sort(self,arr):
-        #start_time=float(datetime.time(datetime.now()).microsecond)
-        #print(start_time)
-        if len(arr)>1:
-            mid = len(arr)//2
-            L = arr[:mid]
-            R = arr[mid:]
+        if len(arr) > 1:
+            mid = len(arr) // 2
+            lefthalf = arr[:mid]
+            righthalf = arr[mid:]
 
-           # sortfactory(L)
-           # MergeSort(R)
+            self.sort(lefthalf)
+            self.sort(righthalf)
             i = j = k = 0
-
-            # copy data to temp arrays L[] and R[]
-            while i< len(L) and j < len(R):
+            while i < len(lefthalf) and j < len(righthalf):
                 self.numberofSteps = self.numberofSteps + 1
-                if L[i] < R[j]:
-                    arr[k] = L[i]
-                    i+=1
+                if lefthalf[i] < righthalf[j]:
+                    arr[k] = lefthalf[i]
+                    i = i + 1
                 else:
-                    arr[k] = R[j]
-                    j+=1
-                k+=1
+                    arr[k] = righthalf[j]
+                    j = j + 1
+                k = k + 1
 
-            #Checking if any element was left
-            while i<len(L):
-                 self.numberofSteps = self.numberofSteps + 1
-                 arr[k] = L[i]
-                 i+=1
-                 k+=1
-
-            while j<len(R):
+            while i < len(lefthalf):
                 self.numberofSteps = self.numberofSteps + 1
-                arr[k] = R[j]
-                j+=1
-                k+=1
-        # stop_time = float(datetime.time(datetime.now()).microsecond)
-        # print(stop_time)
-        # self.elapsedTime = float(stop_time - start_time)
+                arr[k] = lefthalf[i]
+                i = i + 1
+                k = k + 1
+
+            while j < len(righthalf):
+                self.numberofSteps = self.numberofSteps + 1
+                arr[k] = righthalf[j]
+                j = j + 1
+                k = k + 1
         return arr
 
 class SelectionSort(PerformanceSearch):
@@ -172,35 +210,76 @@ class SelectionSort(PerformanceSearch):
         # print(stop_time)
         # self.elapsedTime = float(stop_time - start_time)
         return arr
-
-
+'''
 class QuickSort(PerformanceSearch):
-    def partition(arr, low, high):
-        i = (low - 1)
-        pivot = arr[high]
-
-        for j in range(low, high):
-            if arr[j] <= pivot:
-                i = i + 1
-                arr[i], arr[j] = arr[j], arr[i]
-
-        arr[i + 1], arr[high] = arr[high], arr[i + 1]
-        return (i + 1)
-
     def sort(self, arr):
         n = len(arr)
-        low = 0
-        high = n - 1
+        self.quickSort(arr, 0, n - 1)
+        return arr
 
-        #if low < high:
+    def partition(self, arr, low, high):
+            i = (low - 1)  # index of smaller element
+            pivot = arr[high]  # pivot
 
-            #pi = partition(arr, low, high)
+            for j in range(low, high):
+                self.numberofSteps = self.numberofSteps + 1
+                # If current element is smaller than or
+                # equal to pivot
+                if arr[j] <= pivot:
+                    # increment index of smaller element
+                    i = i + 1
+                    arr[i], arr[j] = arr[j], arr[i]
 
-            # method QuickSort (arr, low,pi -1)
-            # method QuickSort (arr, pi+ 1,high)
+            arr[i + 1], arr[high] = arr[high], arr[i + 1]
+            return (i + 1)
+
+    # Function to do Quick sort
+    def quickSort(self,arr, low, high):
+        if low < high:
+            pi = self.partition(arr, low, high)
+
+            self.quickSort(arr, low, pi - 1)
+            self.quickSort(arr, pi + 1, high)
+'''
 
 
-# Simple factory method
+# Python code to implement Stable QuickSort.
+# The code uses middle element as pivot.
+class QuickSort(PerformanceSearch):
+    def sort(self, arr):
+
+        if len(arr) <= 1:
+            return arr
+            # Let us choose middle element a pivot
+        else:
+            mid = len(arr) // 2
+            pivot = arr[mid]
+
+        # key element is used to break the array
+        # into 2 halves according to their values
+        smaller, greater = [], []
+
+        # Put greater elements in greater list,
+        # smaller elements in smaller list. Also,
+        # compare positions to decide where to put.
+        for indx, val in enumerate(arr):
+            self.numberofSteps = self.numberofSteps + 1
+            if indx != mid:
+                if val < pivot:
+                    smaller.append(val)
+                elif val > pivot:
+                    greater.append(val)
+
+                # If value is same, then considering
+                # position to decide the list.
+                else:
+                    if indx < mid:
+                        smaller.append(val)
+                    else:
+                        greater.append(val)
+        return self.sort(smaller) + [pivot] + self.sort(greater)
+
+# Simple Factory Method
 class SortFactory:
     def buildSort(self,type):
         if type == "Bubble":
@@ -222,13 +301,202 @@ class CaseFactory():
             return AverageCase()
 
 
-#Case = ["Best","Worst", "Average"]
-usecases = CaseFactory().buildCase("Average")
-usecases.setArray()
+#sortTypes = ['Best', 'Worst', 'Average']
+#usecases = CaseFactory().buildCase('Average')
+#usecases.setArray()
 
-#sortTypes = ["Bubble,"Merge","Selection, "Quick"]
+sortCases = ['Best', 'Worst', 'Average']
+sortTypes = ['Bubble','Merge','Selection', 'Quick']
+sortobjects = SortObjects(sortTypes)
+
+epochs = 10
+
+def runSort(sorttype, sortcase):
+    sort_factory = SortFactory()
+    alg = sort_factory.buildSort(sorttype)
+    tStat = list()
+    sStat = list()
+    if sortcase == 'All':
+        for newiter in range(0, len(sortCases)):
+            totaltime = 0
+            step = 0
+            usecases = CaseFactory().buildCase(sortCases[newiter])
+            usecases.setArray()
+
+            for epoch in range(0, epochs):
+                time, step = alg.measurePerformance(usecases.getArray())
+                totaltime = totaltime + time
+            tStat.append(totaltime/epochs)
+            sStat.append(step)
+    else:
+        usecases = CaseFactory().buildCase(sortcase)
+        usecases.setArray()
+        totaltime=0
+        for epoch in range(0, epochs):
+            time, step = alg.measurePerformance(usecases.getArray())
+            totaltime = totaltime + time
+        tStat.append(totaltime / epochs)
+        sStat.append(step)
+
+    #return   tStat,sStat
+    if sortcase == 'All':
+        index = np.arange(len(sortCases))
+        bar_width = 0.35
+        opacity = 0.8
+        colors = ['b', 'r', 'm']
+        plt.bar(index + bar_width, tStat, bar_width / 2, alpha=opacity, color=colors)
+        # plt.ylim(, 100000)
+        # plt.yticks(np.arange(0, 100000, 500))
+        plt.xlabel('Test Cases')
+        plt.ylabel('Time in Miliseconds')
+        plt.title('Time Performance for ' + sorttype + ' Sorting Algorithm')
+        plt.xticks(index + bar_width, sortCases)
+        plt.legend()
+
+        plt.tight_layout()
+        plt.show()
+
+        plt.bar(index + bar_width, sStat, bar_width / 2, alpha=opacity, color=colors)
+        # plt.ylim(, 100000)
+        # plt.yticks(np.arange(0, 100000, 500))
+        plt.xlabel('Test Cases')
+        plt.ylabel('Number of Steps')
+        plt.title('Complexity Performance for ' + sorttype + ' Sorting Algorithm')
+        plt.xticks(index + bar_width, sortCases)
+        plt.legend()
+
+        plt.tight_layout()
+        plt.show()
+    else:
+
+        plt.bar(sortcase, tStat, align='center', alpha=0.5)
+        plt.title(sorttype)
+        plt.xlabel('Time Performance for ' + sorttype)
+        plt.ylabel('Time in Milisecons')
+        plt.tight_layout()
+        plt.show()
+
+        plt.bar(sortcase, sStat, align='center', alpha=0.5)
+        plt.title(sorttype)
+        plt.xlabel('Complexity Performance for ' + sorttype)
+        plt.ylabel('Number of Steps')
+        plt.tight_layout()
+        plt.show()
+
+
+
+def runAll(sorttype, sortcase):
+    sort_factory = SortFactory()
+
+    if sortcase == 'All':
+        tStat = [[0 for x in range(len(sortCases))] for y in range(len(sortTypes))]
+        sStat = [[0 for x in range(len(sortCases))] for y in range(len(sortTypes))]
+        for iter, order in sortobjects:
+            print(iter)
+            alg = sort_factory.buildSort(iter)
+            for newiter in range(0, len(sortCases)):
+                totaltime = 0
+                step = 0
+                usecases = CaseFactory().buildCase(sortCases[newiter])
+                usecases.setArray()
+                for epoch in range(0, epochs):
+                    time, step = alg.measurePerformance(usecases.getArray())
+                    totaltime = totaltime + time
+                tStat[order][newiter] = totaltime / epochs
+                sStat[order][newiter] = step
+
+        print(tStat)
+        index = np.arange(len(sortCases))
+        bar_width = 0.35
+        opacity = 0.8
+        colors = ['b', 'r', 'm', 'g']
+        # All graphics for Time Performance
+        for iter in range(0, len(sortTypes)):
+            plt.bar(index + (iter * bar_width), tStat[iter], bar_width / 2, alpha=opacity, color=colors[iter],
+                    label=sortTypes[iter])
+            # index=index+bar_width
+
+        # plt.ylim(, 100000)
+        # plt.yticks(np.arange(0, 100000, 500))
+        plt.xlabel('Test Cases')
+        plt.ylabel('Time in Miliseconds')
+        plt.title('Time Performance for Sorting Algorithms')
+        plt.xticks(index + bar_width, sortCases)
+        plt.legend()
+
+        plt.tight_layout()
+        plt.show()
+
+        for iter in range(0, len(sortTypes)):
+            plt.bar(index + (iter * bar_width), sStat[iter], bar_width / 2, alpha=opacity, color=colors[iter],
+                    label=sortTypes[iter])
+            # index=index+bar_width
+
+        # plt.ylim(, 100000)
+        # plt.yticks(np.arange(0, 100000, 500))
+        plt.xlabel('Test Cases')
+        plt.ylabel('Number of Steps')
+        plt.title('Complexity Performance for Sorting Algorithms')
+        plt.xticks(index + bar_width, sortCases)
+        plt.legend()
+
+        plt.tight_layout()
+        plt.show()
+
+    else:
+        #tStat = [[0 for x in range(0,1)] for y in range(len(searchTypes))]
+        #sStat = [[0 for x in range(0,1)] for y in range(len(searchTypes))]
+        tStat = list()
+        sStat = list()
+        for iter, order in sortobjects:
+            print(iter)
+            alg = sort_factory.buildSort(iter)
+            totaltime = 0
+            step = 0
+            usecases = CaseFactory().buildCase(sortcase)
+            usecases.setArray()
+            for epoch in range(0, epochs):
+                time, step = alg.measurePerformance(usecases.getArray())
+                totaltime = totaltime + time
+            tStat.append(totaltime / epochs)
+            sStat.append(step)
+
+        index = np.arange(len(sortTypes))
+        bar_width = 0.35
+        opacity = 0.8
+        colors = ['b', 'r', 'm', 'g']
+        plt.bar(index + bar_width, tStat, bar_width / 2, alpha=opacity, color=colors)
+        # plt.ylim(, 100000)
+        # plt.yticks(np.arange(0, 100000, 500))
+        plt.xlabel('Test Cases')
+        plt.ylabel('Time in Miliseconds')
+        plt.title('Time Performance for ' + sorttype + ' Sorting Algorithm')
+        plt.xticks(index + bar_width, sortTypes)
+        plt.legend()
+
+        plt.tight_layout()
+        plt.show()
+
+        plt.bar(index + bar_width, sStat, bar_width / 2, alpha=opacity, color=colors)
+        # plt.ylim(, 100000)
+        # plt.yticks(np.arange(0, 100000, 500))
+        plt.xlabel('Test Cases')
+        plt.ylabel('Number of Steps')
+        plt.title('Complexity Performance for ' + sorttype + ' Sorting Algorithm')
+        plt.xticks(index + bar_width, sortCases)
+        plt.legend()
+
+        plt.tight_layout()
+        plt.show()
+
+
+#runSort('Selection','Worst')
+#runSort('Selection','All')
+#runAll('All','Worst')
+
+'''
 sortfactory = SortFactory()
-alg = sortfactory.buildSort("Merge")
+alg = sortfactory.buildSort("Selection")
 
 sortedarry = alg.sort(usecases.getArray())
 
@@ -240,3 +508,4 @@ for i in range (len(sortedarry)):
 
 print("Time: ",time)
 print("Step: ",steps)
+'''
