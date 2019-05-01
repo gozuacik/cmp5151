@@ -7,6 +7,7 @@ import random
 from matplotlib.figure import Figure
 import Search
 import Sorting
+import Visit
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -104,10 +105,15 @@ class MainWindow(QWidget):
         #self.showValues(self.comboBoxSearch.currentText(),self.comboBoxSearch1.currentText())
         print("Search Algorithm: ",self.comboBoxSearch.currentText())
         print("Use Case: ", self.comboBoxSearch2.currentText())
+        searchVisit = Visit.SearchVisit()
+        algVisit = Visit.AlgVisitor(self.comboBoxSearch.currentText(), self.comboBoxSearch2.currentText())
+        searchVisit.accept(algVisit)
+        '''
         if self.comboBoxSearch.currentText() == 'All':
             Search.runAll(self.comboBoxSearch.currentText(), self.comboBoxSearch2.currentText())
         else:
             Search.runSearch(self.comboBoxSearch.currentText(),self.comboBoxSearch2.currentText())
+        '''
         #self.secondWindow = SecondWindow(fig1,fig2)
         #self.dialogs.append(secondWindow)
         #self.secondWindow.show()
@@ -120,11 +126,16 @@ class MainWindow(QWidget):
         #self.showValues(self.comboBoxSearch.currentText(),self.comboBoxSearch1.currentText())
         print("Sort Algorithm: ",self.comboBoxSearch3.currentText())
         print("Use Case: ", self.comboBoxSearch4.currentText())
+
+        sortVisit = Visit.SortVisit()
+        algVisit = Visit.AlgVisitor(self.comboBoxSearch3.currentText(), self.comboBoxSearch4.currentText())
+        sortVisit.accept(algVisit)
+        '''
         if self.comboBoxSearch3.currentText() == 'All':
             Sorting.runAll(self.comboBoxSearch3.currentText(), self.comboBoxSearch4.currentText())
         else:
             Sorting.runSort(self.comboBoxSearch3.currentText(),self.comboBoxSearch4.currentText())
-
+        '''
         #self.secondWindow = SecondWindow()
         #self.dialogs.append(secondWindow)
         #self.secondWindow.show()
