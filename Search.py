@@ -6,61 +6,15 @@
 # https://www.geeksforgeeks.org/interpolation-search/
 
 from datetime import datetime
-import time
-import random
 import math
 import matplotlib.pyplot as plt
 import numpy as np
+import Common
 
-
-# 0 50000 99999
-# ArrayLenght
-arrayLength = 100000
-
-class UseCases():
-    def __init__(self):
-        self.Array = list()
-
-    def setArray(self):
-        pass
-
-    def getArray(self):
-        pass
-
-# List is ordered like 0...99999
-class BestCase(UseCases):
-    def setArray(self):
-        r = range(arrayLength)
-        self.Array = list(r)
-        print("Array[0]...Array[",arrayLength-1,"]: ",self.Array[0],self.Array[arrayLength-1])
-
-    def getArray(self):
-        return self.Array
-
-# List is ordered reverse like 999999...0
-class WorstCase(UseCases):
-    def setArray(self):
-        r = sorted(range(arrayLength),reverse=True)
-        self.Array = list(r)
-        print("Array[0]...Array[",arrayLength-1,"]: ",self.Array[0],self.Array[arrayLength-1])
-
-    def getArray(self):
-        return self.Array
-
-# List is shuffled.
-class AverageCase(UseCases):
-    def setArray(self):
-        r = range(arrayLength)
-        self.Array = list(r)
-        random.shuffle(self.Array)
-        print("Array[0]...Array[",arrayLength-1,"]: ",self.Array[0],self.Array[arrayLength-1])
-
-    def getArray(self):
-        return self.Array
 
 
 # Template Method
-class PeformanceSearch:
+class PeformanceSearch(Common.Performance):
     def __init__(self,title):
         self.timeStart = 0
         self.timeStop = 0
@@ -270,18 +224,11 @@ class SearchFactory():
            return InterpolationSearch('Interpolation Search')
 
 
-class CaseFactory():
-   def buildCase(self, typ):
-       if typ == 'Best':
-          return BestCase()
-       elif typ == 'Worst':
-           return WorstCase()
-       elif typ == 'Average':
-           return AverageCase()
-
 #searchTypes = ['Best', 'Worst', 'Average']
-usecases = CaseFactory().buildCase('Best')
-usecases.setArray()
+arrayLength = 100000
+#usecases = Common.CaseFactory().buildCase('Best')
+#usecases.setArray()
+useArray =  list(range(arrayLength))
 
 searchCases = ['Best','Worst','Average']
 searchElement = {'Best':9999,'Worst':99999,'Average':50000}
@@ -308,7 +255,7 @@ def runSearch(searchtype, searchcase):
             totaltime = 0
             step = 0
             for epoch in range(0, epochs):
-                index, time, step = alg.measurePerformance(usecases.getArray(), arrayLength,
+                index, time, step = alg.measurePerformance(useArray, arrayLength,
                                                            searchElement[searchCases[newiter]])
                 totaltime = totaltime + time
             tStat.append(totaltime/epochs)
@@ -316,7 +263,7 @@ def runSearch(searchtype, searchcase):
     else:
         totaltime=0
         for epoch in range(0, epochs):
-            index, time, step = alg.measurePerformance(usecases.getArray(), arrayLength,searchElement[searchcase])
+            index, time, step = alg.measurePerformance(useArray, arrayLength,searchElement[searchcase])
             totaltime = totaltime + time
         tStat.append(totaltime / epochs)
         sStat.append(step)
@@ -355,7 +302,7 @@ def runSearch(searchtype, searchcase):
         plt.bar(searchcase, tStat, align='center', alpha=0.5)
         plt.title(searchtype)
         plt.xlabel('Time Performance for ' + searchtype)
-        plt.ylabel('Time in Milisecons')
+        plt.ylabel('Time in Miliseconds')
         plt.tight_layout()
         plt.show()
 
@@ -381,7 +328,7 @@ def runAll(searchtype, searchcase):
                 totaltime = 0
                 step = 0
                 for epoch in range(0, epochs):
-                    index, time, step = alg.measurePerformance(usecases.getArray(), arrayLength,
+                    index, time, step = alg.measurePerformance(useArray, arrayLength,
                                                                searchElement[searchCases[newiter]])
                     totaltime = totaltime + time
                 tStat[order][newiter] = totaltime / epochs
@@ -436,7 +383,7 @@ def runAll(searchtype, searchcase):
             totaltime = 0
             step = 0
             for epoch in range(0, epochs):
-                index, time, step = alg.measurePerformance(usecases.getArray(), arrayLength,
+                index, time, step = alg.measurePerformance(useArray, arrayLength,
                                                            searchElement[searchcase])
                 totaltime = totaltime + time
             tStat.append(totaltime / epochs)

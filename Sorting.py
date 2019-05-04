@@ -6,60 +6,13 @@
 
 from datetime import datetime
 import datetime
-import time
-import random
-import math
 import matplotlib.pyplot as plt
 import numpy as np
 from timeit import default_timer as timer
-
-
-# 0 50000 99999
-# ArrayLenght
-arrayLength = 1000
-
-class UseCase:
-    def __init__(self):
-        self.array = list()
-
-    def setArray(self): pass
-
-    def getArray(self): pass
-
-# list is ordered like 0 ....99999
-class BestCase(UseCase):
-    def setArray(self):
-        r = range(arrayLength)
-        self.array = list(r)
-        print("Array[0]...Array[",arrayLength- 1, "]: ",self.array[0],self.array[arrayLength-1])
-
-    def getArray(self):
-        return self.array
-
-
-# list is ordered reverse like 99999....0000
-class WorstCase(UseCase):
-    def setArray(self):
-        r = sorted(range(arrayLength),reverse = True)
-        self.array = list(r)
-        print("Array[0]...Array[",arrayLength- 1, "]: ",self.array[0],self.array[arrayLength-1])
-
-    def getArray(self):
-        return self.array
-
-# list is shuffled.
-class AverageCase(UseCase):
-    def setArray(self):
-        r = range(arrayLength)
-        self.array = list(r)
-        random.shuffle(self.array)
-        print("Array[0]...Array[",arrayLength- 1, "]: ",self.array[0],self.array[arrayLength-1])
-
-    def getArray(self):
-        return self.array
+import Common
 
 # Template method
-class PerformanceSearch:
+class PerformanceSort(Common.Performance):
     def __init__(self,title):
         self.timeStart = 0
         self.timeStop = 0
@@ -138,7 +91,7 @@ class SortIterator(object):
     def __iter__(self):
         return self
 
-class BubbleSort(PerformanceSearch):
+class BubbleSort(PerformanceSort):
     def sort(self,arr):
         #start_time=float(datetime.time(datetime.now()).microsecond)
         #print(start_time)
@@ -158,7 +111,7 @@ class BubbleSort(PerformanceSearch):
         # self.elapsedTime = float(stop_time - start_time)
         return arr
 
-class MergeSort(PerformanceSearch):
+class MergeSort(PerformanceSort):
     def sort(self,arr):
         if len(arr) > 1:
             mid = len(arr) // 2
@@ -191,7 +144,7 @@ class MergeSort(PerformanceSearch):
                 k = k + 1
         return arr
 
-class SelectionSort(PerformanceSearch):
+class SelectionSort(PerformanceSort):
     def sort(self,arr):
         for i in range(len(arr)):
             self.numberofSteps = self.numberofSteps + 1
@@ -245,7 +198,7 @@ class QuickSort(PerformanceSearch):
 
 # Python code to implement Stable QuickSort.
 # The code uses middle element as pivot.
-class QuickSort(PerformanceSearch):
+class QuickSort(PerformanceSort):
     def sort(self, arr):
 
         if len(arr) <= 1:
@@ -291,14 +244,7 @@ class SortFactory:
         elif type == "Selection":
             return SelectionSort("Selection Sort")
 
-class CaseFactory():
-    def buildCase(self,type):
-        if type == "Best":
-            return BestCase()
-        elif type =="Worst":
-            return WorstCase()
-        elif type == "Average":
-            return AverageCase()
+
 
 
 #sortTypes = ['Best', 'Worst', 'Average']
@@ -320,7 +266,7 @@ def runSort(sorttype, sortcase):
         for newiter in range(0, len(sortCases)):
             totaltime = 0
             step = 0
-            usecases = CaseFactory().buildCase(sortCases[newiter])
+            usecases = Common.CaseFactory().buildCase(sortCases[newiter])
             usecases.setArray()
 
             for epoch in range(0, epochs):
@@ -329,7 +275,7 @@ def runSort(sorttype, sortcase):
             tStat.append(totaltime/epochs)
             sStat.append(step)
     else:
-        usecases = CaseFactory().buildCase(sortcase)
+        usecases = Common.CaseFactory().buildCase(sortcase)
         usecases.setArray()
         totaltime=0
         for epoch in range(0, epochs):
@@ -372,7 +318,7 @@ def runSort(sorttype, sortcase):
         plt.bar(sortcase, tStat, align='center', alpha=0.5)
         plt.title(sorttype)
         plt.xlabel('Time Performance for ' + sorttype)
-        plt.ylabel('Time in Milisecons')
+        plt.ylabel('Time in Miliseconds')
         plt.tight_layout()
         plt.show()
 
@@ -397,7 +343,7 @@ def runAll(sorttype, sortcase):
             for newiter in range(0, len(sortCases)):
                 totaltime = 0
                 step = 0
-                usecases = CaseFactory().buildCase(sortCases[newiter])
+                usecases = Common.CaseFactory().buildCase(sortCases[newiter])
                 usecases.setArray()
                 for epoch in range(0, epochs):
                     time, step = alg.measurePerformance(usecases.getArray())
@@ -453,7 +399,7 @@ def runAll(sorttype, sortcase):
             alg = sort_factory.buildSort(iter)
             totaltime = 0
             step = 0
-            usecases = CaseFactory().buildCase(sortcase)
+            usecases = Common.CaseFactory().buildCase(sortcase)
             usecases.setArray()
             for epoch in range(0, epochs):
                 time, step = alg.measurePerformance(usecases.getArray())
