@@ -38,7 +38,7 @@ class PerformanceSort(Common.Performance):
 
     def calcTime(self):
         #print(type(self.timeStop - self.timeStart))
-        self.elapsedTime = self.timeStop - self.timeStart
+        self.elapsedTime = (self.timeStop - self.timeStart)*1000
         tempTimer = int(self.elapsedTime)
 #        self.elapsedTime = datetime.datetime(self.timeStop - self.timeStart)
         print(self.title, " Elapsed Time = ",self.elapsedTime)
@@ -169,11 +169,9 @@ class QuickSort(PerformanceSearch):
         n = len(arr)
         self.quickSort(arr, 0, n - 1)
         return arr
-
     def partition(self, arr, low, high):
             i = (low - 1)  # index of smaller element
             pivot = arr[high]  # pivot
-
             for j in range(low, high):
                 self.numberofSteps = self.numberofSteps + 1
                 # If current element is smaller than or
@@ -182,15 +180,12 @@ class QuickSort(PerformanceSearch):
                     # increment index of smaller element
                     i = i + 1
                     arr[i], arr[j] = arr[j], arr[i]
-
             arr[i + 1], arr[high] = arr[high], arr[i + 1]
             return (i + 1)
-
     # Function to do Quick sort
     def quickSort(self,arr, low, high):
         if low < high:
             pi = self.partition(arr, low, high)
-
             self.quickSort(arr, low, pi - 1)
             self.quickSort(arr, pi + 1, high)
 '''
@@ -443,15 +438,11 @@ def runAll(sorttype, sortcase):
 '''
 sortfactory = SortFactory()
 alg = sortfactory.buildSort("Selection")
-
 sortedarry = alg.sort(usecases.getArray())
-
 time,steps = alg.measurePerformance(usecases.getArray())
-
 print("The sorted list is :")
 for i in range (len(sortedarry)):
     print(sortedarry[i])
-
 print("Time: ",time)
 print("Step: ",steps)
 '''

@@ -1,16 +1,14 @@
-
 # Reference
 # https://www.geeksforgeeks.org/linear-search/
 # https://www.geeksforgeeks.org/binary-search/
 # https://www.geeksforgeeks.org/jump-search/
 # https://www.geeksforgeeks.org/interpolation-search/
 
-from datetime import datetime
 import math
 import matplotlib.pyplot as plt
 import numpy as np
 import Common
-
+from timeit import default_timer as timer
 
 
 # Template Method
@@ -24,20 +22,22 @@ class PeformanceSearch(Common.Performance):
         self.foundIndex = -1
 
     def startTime(self):
-        tempTime= datetime.time(datetime.now())
-        self.timeStart = (tempTime.second*1000) + (tempTime.microsecond/1000)
+        #tempTime= datetime.time(datetime.now())
+        #self.timeStart = (tempTime.second*1000) + (tempTime.microsecond/1000)
+        self.timeStart = timer()
         #self.timeStart = float(datetime.time(datetime.now()).microsecond)
         print("Start Time: ",self.timeStart)
 
     def stopTime(self):
-        tempTime = datetime.time(datetime.now())
-        self.timeStop = (tempTime.second*1000) + (tempTime.microsecond/1000)
+        #tempTime = datetime.time(datetime.now())
+        #self.timeStop = (tempTime.second*1000) + (tempTime.microsecond/1000)
+        self.timeStop = timer()
         #self.timeStop = float(datetime.time(datetime.now()).microsecond)
         print("Stop Time: ", self.timeStop)
 
     def calcTime(self):
         #print(type(self.timeStop - self.timeStart))
-        self.elapsedTime = float(self.timeStop - self.timeStart)
+        self.elapsedTime = float(self.timeStop - self.timeStart)*1000
         #self.elapsedTime = float(self.timeStop - self.timeStart)
         print(self.title, " Elapsed Time: ", self.elapsedTime)
 
@@ -446,7 +446,6 @@ def runAll(searchtype, searchcase):
 
 
 '''
-
 # Individual graphics for Time Performance
 def plotIndividualTime(case,alg):
     plt.bar(case, timeStat[alg], align='center', alpha=0.5)
@@ -455,7 +454,6 @@ def plotIndividualTime(case,alg):
     plt.ylabel('Time in Milisecons')
     plt.tight_layout()
     plt.show()
-
 # Individual graphics for Complexity Performance
 def plotIndividualComplexity(case,alg):
     plt.bar(case, stepStat[alg], align='center', alpha=0.5)
@@ -464,8 +462,6 @@ def plotIndividualComplexity(case,alg):
     plt.ylabel('Time in Milisecons')
     plt.tight_layout()
     plt.show()
-
-
 #for iter in range(0,len(searchTypes)):
 for iter,order in searchobjects:
     for newiter in range(0,len(searchCases)):
@@ -482,15 +478,11 @@ for iter,order in searchobjects:
             totaltime = totaltime + time
         timeStat[order][newiter]=totaltime/10
         stepStat[order][newiter]=step
-
-
 print("Time Stat",timeStat)
 print("Step",stepStat)
-
 #plt.plot(searchTypes, timeStat, 'g', label='Train Loss')
 #plt.plot(searchTypes, stepStat,'b', label='Validation Loss')
 #plt.xticks(np.arange(rStart, rStop, 1))
-
 # Individual graphics for Time Performance
 def plotIndividualTime(case,alg):
     plt.bar(case, timeStat[alg], align='center', alpha=0.5)
@@ -499,7 +491,6 @@ def plotIndividualTime(case,alg):
     plt.ylabel('Time in Milisecons')
     plt.tight_layout()
     plt.show()
-
 # Individual graphics for Complexity Performance
 def plotIndividualComplexity(case,alg):
     plt.bar(case, stepStat[alg], align='center', alpha=0.5)
@@ -508,7 +499,6 @@ def plotIndividualComplexity(case,alg):
     plt.ylabel('Time in Milisecons')
     plt.tight_layout()
     plt.show()
-
 # Individual graphics for Time Performance
 for iter in range(0,len(searchTypes)):
     plt.bar(searchCases, timeStat[iter], align='center', alpha=0.5)
@@ -517,7 +507,6 @@ for iter in range(0,len(searchTypes)):
     plt.ylabel('Time in Milisecons')
     plt.tight_layout()
     plt.show()
-
 # Individual graphics for Complexity Performance
 for iter in range(0,len(searchTypes)):
     plt.bar(searchCases, stepStat[iter], align='center', alpha=0.5)
@@ -526,9 +515,6 @@ for iter in range(0,len(searchTypes)):
     plt.ylabel('Number of Steps')
     plt.tight_layout()
     plt.show()
-
-
-
 # All graphics for Time Performance
 def plotAllTime():
     fig, ax = plt.subplots()
@@ -536,13 +522,11 @@ def plotAllTime():
     bar_width = 0.35
     opacity = 0.8
     colors = ['b', 'r', 'm', 'g']
-
     # All graphics for Time Performance
     for iter in range(0, len(searchTypes)):
         plt.bar(index + (iter * bar_width), timeStat[iter], bar_width / 2, alpha=opacity, color=colors[iter],
                 label=searchTypes[iter])
         # index=index+bar_width
-
     # plt.ylim(, 100000)
     # plt.yticks(np.arange(0, 100000, 500))
     plt.xlabel('Test Cases')
@@ -550,22 +534,17 @@ def plotAllTime():
     plt.title('Time Performance for Search Algorithms')
     plt.xticks(index + bar_width, searchCases)
     plt.legend()
-
     plt.tight_layout()
     plt.show()
-
-
 fig, ax = plt.subplots()
 index = np.arange(len(searchCases))
 bar_width = 0.35
 opacity = 0.8
 colors=['b','r','m','g']
-
 # All graphics for Time Performance
 for iter in range(0,len(searchTypes)):
     plt.bar(index+(iter*bar_width), timeStat[iter],bar_width/2,alpha=opacity,color=colors[iter],label=searchTypes[iter])
     #index=index+bar_width
-
 #plt.ylim(, 100000)
 #plt.yticks(np.arange(0, 100000, 500))
 plt.xlabel('Test Cases')
@@ -573,10 +552,8 @@ plt.ylabel('Timer in Miliseconds')
 plt.title('Time Performance for Search Algorithms')
 plt.xticks(index + bar_width, searchCases)
 plt.legend()
-
 plt.tight_layout()
 plt.show()
-
 def plotAllComplexity():
     fig, ax = plt.subplots()
     index = np.arange(len(searchCases))
@@ -588,7 +565,6 @@ def plotAllComplexity():
         plt.bar(index + (iter * bar_width), stepStat[iter], bar_width / 2, alpha=opacity, color=colors[iter],
                 label=searchTypes[iter])
         # index=index+bar_width
-
     # plt.ylim(, 100000)
     # plt.yticks(np.arange(0, 100000, 500))
     plt.xlabel('Test Cases')
@@ -596,16 +572,12 @@ def plotAllComplexity():
     plt.title('Complexity Performance for Search Algorithms')
     plt.xticks(index + bar_width, searchCases)
     plt.legend()
-
     plt.tight_layout()
     plt.show()
-
-
 # All graphics for Complexity Performance
 for iter in range(0,len(searchTypes)):
     plt.bar(index+(iter*bar_width), stepStat[iter],bar_width/2,alpha=opacity,color=colors[iter],label=searchTypes[iter])
     #index=index+bar_width
-
 #plt.ylim(, 100000)
 #plt.yticks(np.arange(0, 100000, 500))
 plt.xlabel('Test Cases')
@@ -613,9 +585,6 @@ plt.ylabel('Number of Steps')
 plt.title('Complexity Performance for Search Algorithms')
 plt.xticks(index + bar_width, searchCases)
 plt.legend()
-
 plt.tight_layout()
 plt.show()
-
 '''
-
