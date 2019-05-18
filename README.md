@@ -11,6 +11,7 @@ Download all the python files into your local folder.
 
 ## Usage
 Run gui.py
+
 Details can be found in the PDF file.
 
 ## Contributing
