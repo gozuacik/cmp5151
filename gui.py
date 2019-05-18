@@ -1,12 +1,8 @@
 import sys
 from PyQt5.QtWidgets import *
-import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import random
 from matplotlib.figure import Figure
-import Search
-import Sorting
 import Visit
 
 class MainWindow(QWidget):
